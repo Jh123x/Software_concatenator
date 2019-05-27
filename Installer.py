@@ -13,7 +13,7 @@ class Window(tkinter.Frame):
         self.master = master
 
         #Fixing the frame size
-        self.master.geometry('500x300')
+        self.master.geometry('700x450')
 
         #Title of the widget
         self.master.title("Installer")

@@ -13,6 +13,12 @@ Softwares Folder: The files inside will be occasionally required. There will be 
 
 
 
+TODO:
+1. Change the format of the software to checkboxes instead with the items in the common folder checked and the items in the softwares folder unchecked.
+
+2. Fix bugs on marginal cases
+
+3. A better GUI
 
 
 
