@@ -1,15 +1,14 @@
-import os
+import os, tkinter, ctypes 
 from subprocess import Popen,call
-import tkinter
 from tkinter import scrolledtext as tst
-import ctypes 
 from sys import executable
 
 
 #Creating the GUI
 class Window(tkinter.Frame):
+    '''Main application class'''
     def __init__(self, master=None):
-        '''Initialise the variables'''
+        #Initialise the variables
         tkinter.Frame.__init__(self, master=None)               
         self.master = master
         self.items_to_run = []
@@ -55,8 +54,8 @@ class Window(tkinter.Frame):
         for f in range(self.c_len):
             fname = self.c_files_n[f]
             file_c = self.c_files[f]
-            self.checkboxes.append(tkinter.Checkbutton(self.master,text = fname,command = create_software_func(add_to_selected,file_c,self),anchor = 'w'))
-            add_to_selected(file_c,self)
+            self.checkboxes.append(tkinter.Checkbutton(self.master,text = fname,command = create_software_func(toggle_selected,file_c,self),anchor = 'w'))
+            toggle_selected(file_c,self)
             self.checkboxes[f].toggle()
             self.checkboxes[f].grid(row = 3+f,column = 1,columnspan = 1,sticky="W")
 
@@ -64,7 +63,7 @@ class Window(tkinter.Frame):
         for i in range(self.s_len):
             fname = self.s_files_n[i]
             file_s = self.s_files[i]
-            self.checkboxes.append(tkinter.Checkbutton(self.master,text = fname, command = create_software_func(add_to_selected,file_s,self),anchor = 'w'))
+            self.checkboxes.append(tkinter.Checkbutton(self.master,text = fname, command = create_software_func(toggle_selected,file_s,self),anchor = 'w'))
             self.checkboxes[self.c_len + i].grid(row = (3 + self.c_len + i),column = 1,columnspan = 1,sticky="W")
 
         #Placing the instructions item at the bottom of the page
@@ -73,7 +72,10 @@ class Window(tkinter.Frame):
             
 
 def create_software_func(function,*arg):
-    '''A Function to create a copy of a function'''
+    '''A Function to create a copy of a function
+        input: function, *arg
+        output: helper function with arg inserted into function
+    '''
 
     def helper():
         '''A Helper function for tkinter commands'''
@@ -82,18 +84,25 @@ def create_software_func(function,*arg):
 
     return helper
 
-def log(phrase,app):
-    '''Function to Log activities'''
-
+def log(string,app):
+    '''Function to Log activities
+        Logs the string used to the scroll textbox of the app
+        input: string, app
+        output: None
+    '''
     #Insert the words into the scrolled text
-    app.log.insert(tkinter.END,phrase+'\n')
+    app.log.insert(tkinter.END,string+'\n')
 
     #Makes the scrolled text move to the end
     app.log.see(tkinter.END)
     return 
         
 def install_selected(app):
-    '''Function to install the files which are selected'''
+    '''Function to install the files which are selected
+        Iterates through the items selected and run them one at a time
+        input: app
+        Output: None
+    '''
     files = app.all_files
     for i in app.items_to_run:
         log('Running ' + files[i],app)
@@ -101,8 +110,11 @@ def install_selected(app):
     log('All Done!',app)
     return
     
-def add_to_selected(item,app):
-    '''Function to add/remove the apps selected'''
+def toggle_selected(item,app):
+    '''Function to add/remove the apps selected to the program list within the app
+        Arguments: item, app
+        Output: Return True if file is successfully added and false if item is removed
+    '''
     files = app.all_files
     it = files.index(item)
     if it not in app.items_to_run:
@@ -116,7 +128,10 @@ def add_to_selected(item,app):
 
 #Retrieving the files
 def get_exe(folder,full=True):
-    '''To obtain all the exe files within the folder'''
+    '''To obtain all the exe files within the folder
+        arguments: folder, full=True
+        output: List of file names within the folder. Absolute path if full == true
+    '''
 
     #Obtaining Absolute path to the folder
     path = os.getcwd()+'\\' + folder + '\\'
@@ -134,7 +149,9 @@ def get_exe(folder,full=True):
 
 def open_file(file_path,app):
     '''Opens a file and function will keep running until the window is closed
-        returns True once the file is stopped
+        returns True once the file is stopped or closed
+        Arguments: File_path,app GUI
+        Output: None
     '''
     #Log the activity
     log(file_path,app)
@@ -151,7 +168,11 @@ def open_file(file_path,app):
     return True
 
 def is_admin():
-    '''A Function to check if the app is running as administrator'''
+    '''
+    A Function to check if the app is running as administrator
+    Arguments: None
+    Output: Returns True, if system is admin. Else otherwise
+    '''
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
@@ -160,7 +181,7 @@ def is_admin():
 def main():
     '''Main function'''
     if is_admin():
-        #Checking if the relavant folders exits:
+        #Checking if the relavant folders exists
         path = os.getcwd()
         if not os.path.isdir(path + "\\Softwares\\"):
             os.mkdir(path + "\\Softwares\\")
